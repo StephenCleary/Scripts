@@ -1,4 +1,4 @@
-# A script that sets preferences, to be run once after Chocolatey is done.
+# A script that sets preferences.
 #   For Local Group Policies, see https://www.microsoft.com/en-us/download/details.aspx?id=25250
 
 function Set-Registry([string]$Path, [string]$Name, [string]$PropertyType, $Value) {
