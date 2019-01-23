@@ -1,0 +1,10 @@
+- Install Windows 10 from USB
+- Windows Updates
+- ./settings.ps1
+- Activate Windows 10 Professional
+- Windows Updates
+- Install Drivers
+- Install Chocolatey
+- choco install -y ./choco.config
+- Install MSOffice
+- Clean up Start menu and Personalize desktop
