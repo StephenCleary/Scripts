@@ -1,4 +1,4 @@
-# A script that sets preferences.
+# A script that sets up a new computer.
 #   For Local Group Policies, see https://www.microsoft.com/en-us/download/details.aspx?id=25250
 
 function Set-Registry([string]$Path, [string]$Name, [string]$PropertyType, $Value) {
@@ -7,6 +7,10 @@ function Set-Registry([string]$Path, [string]$Name, [string]$PropertyType, $Valu
     }
     New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $PropertyType -Force | Out-Null
 }
+
+# Set PowerShell execution policy
+Write-Output "Setting PowerShell execution policy to RemoteSigned."
+Set-ExecutionPolicy RemoteSigned -Force
 
 # Do not sleep when plugged in
 Write-Output "Disabling power-off when plugged in."
@@ -75,7 +79,19 @@ Get-AppxPackage Microsoft.Xbox.TCUI | Remove-AppxPackage # XBox Live
 Get-AppxPackage Microsoft.YourPhone | Remove-AppxPackage
 Get-AppxPackage Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage
 
-## Final operations
-Write-Output "Applying Group Policy updates..."
+## Apply all preferences
+Write-Output "Applying Group Policy updates."
 gpupdate /force
+
+## Install Chocolatey
+Write-Output "Installing Chocolatey."
+Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+. $profile
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+## Install Chocolatey packages
+Write-Output "Installing applications."
+choco install -y .\choco.config
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
 Write-Output "Done!"

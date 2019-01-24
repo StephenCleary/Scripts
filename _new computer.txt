@@ -1,10 +1,8 @@
-- Install Windows 10 from USB
-- Windows Updates
-- ./settings.ps1
-- Activate Windows 10 Professional
+- Install Windows 10 from USB with key in \Sources\PID.txt
+  [PID]
+  Value=XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
 - Windows Updates
 - Install Drivers
-- Install Chocolatey
-- choco install -y ./choco.config
+- ./setup.ps1
 - Install MSOffice
 - Clean up Start menu and Personalize desktop
