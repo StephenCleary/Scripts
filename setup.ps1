@@ -1,5 +1,6 @@
 # A script that sets up a new computer.
 #   For Local Group Policies, see https://www.microsoft.com/en-us/download/details.aspx?id=25250
+#   For power configuration, see the output of `powercfg -Q`
 
 function Set-Registry([string]$Path, [string]$Name, [string]$PropertyType, $Value) {
     if (!(Test-Path $Path)) {
@@ -17,6 +18,11 @@ Write-Output "Disabling power-off when plugged in."
 powercfg /change standby-timeout-ac 0
 powercfg /change hibernate-timeout-ac 0
 
+# Do not turn off the PC when I close the lid
+Write-Output "Disabling power-off when lid is closed."
+powercfg -SETACVALUEINDEX SCHEME_BALANCED SUB_BUTTONS LIDACTION 0
+powercfg -SETDCVALUEINDEX SCHEME_BALANCED SUB_BUTTONS LIDACTION 0
+
 # Explorer -> View -> File Name Extensions
 Write-Output "Showing file name extensions."
 Set-Registry -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name HideFileExt -Value 0
@@ -30,8 +36,27 @@ Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps" | Get-ChildItem | Get-ChildIt
 Write-Output "Enabling anonymous network shares."
 Set-Registry -Path "HKLM:\Software\Policies\Microsoft\Windows\LanmanWorkstation" -Name AllowInsecureGuestAuth -Value 1
 
+# Turn off Bluetooth
+Write-Output "Turning off Bluetooth..."
+#   https://superuser.com/a/1293303/43669
+Add-Type -AssemblyName System.Runtime.WindowsRuntime
+$winrtAsTaskWithResult = ([System.WindowsRuntimeSystemExtensions].GetMethods() | ? { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' })[0]
+Function WinrtWaitFor($WinRtTask, $ResultType) {
+    $asTask = $winrtAsTaskWithResult.MakeGenericMethod($ResultType)
+    $netTask = $asTask.Invoke($null, @($WinRtTask))
+    $netTask.Wait(-1) | Out-Null
+    $netTask.Result
+}
+[Windows.Devices.Radios.Radio,Windows.System.Devices,ContentType=WindowsRuntime] | Out-Null
+[Windows.Devices.Radios.RadioAccessStatus,Windows.System.Devices,ContentType=WindowsRuntime] | Out-Null
+WinrtWaitFor ([Windows.Devices.Radios.Radio]::RequestAccessAsync()) ([Windows.Devices.Radios.RadioAccessStatus]) | Out-Null
+$radios = WinrtWaitFor ([Windows.Devices.Radios.Radio]::GetRadiosAsync()) ([System.Collections.Generic.IReadOnlyList[Windows.Devices.Radios.Radio]])
+$bluetooth = $radios | Where-Object { $_.Kind -eq 'Bluetooth' }
+[Windows.Devices.Radios.RadioState,Windows.System.Devices,ContentType=WindowsRuntime] | Out-Null
+WinrtWaitFor ($bluetooth.SetStateAsync('Off')) ([Windows.Devices.Radios.RadioAccessStatus]) | Out-Null
+
 # This is like an arms war or something...
-Write-Output "Disabling Cortana and Search."
+Write-Output "Disabling Cortana and Web search from the taskbar."
 Set-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name AllowCortana -Value 0
 Set-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name AllowCortanaAboveLock -Value 0
 Set-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name AllowCloudSearch -Value 0
@@ -94,4 +119,8 @@ Write-Output "Installing applications."
 choco install -y .\choco.config
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
-Write-Output "Done!"
+# Enable Hyper-V
+Write-Output "Enabling Hyper-V."
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+
+Write-Output "Done! Please reboot."
