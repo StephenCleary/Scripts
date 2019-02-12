@@ -40,7 +40,7 @@ Set-Registry -Path "HKLM:\Software\Policies\Microsoft\Windows\LanmanWorkstation"
 Write-Output "Turning off Bluetooth..."
 #   https://superuser.com/a/1293303/43669
 Add-Type -AssemblyName System.Runtime.WindowsRuntime
-$winrtAsTaskWithResult = ([System.WindowsRuntimeSystemExtensions].GetMethods() | ? { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' })[0]
+$winrtAsTaskWithResult = ([System.WindowsRuntimeSystemExtensions].GetMethods() | Where-Object { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' })[0]
 Function WinrtWaitFor($WinRtTask, $ResultType) {
     $asTask = $winrtAsTaskWithResult.MakeGenericMethod($ResultType)
     $netTask = $asTask.Invoke($null, @($WinRtTask))
