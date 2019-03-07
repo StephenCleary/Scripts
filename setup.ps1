@@ -108,6 +108,10 @@ Get-AppxPackage Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage
 Write-Output "Applying Group Policy updates."
 gpupdate /force
 
+## Install PowerShell modules
+Install-PackageProvider -Name NuGet -Force
+Install-Module -Name Az -AllowClobber -Force
+
 ## Install Chocolatey
 Write-Output "Installing Chocolatey."
 Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
