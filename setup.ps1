@@ -123,6 +123,9 @@ Write-Output "Installing applications."
 choco install -y .\choco.config
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
+## Install Node utilities
+npm install -g npm-check-updates
+
 # Enable Hyper-V
 Write-Output "Enabling Hyper-V."
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
