@@ -32,6 +32,10 @@ Write-Output "Turning off Windows sounds."
 Set-Registry -Path "HKCU:\AppEvents\Schemes" -Name "(Default)" -Value ".None"
 Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps" | Get-ChildItem | Get-ChildItem | Where-Object {$_.PSChildName -eq ".Current"} | Set-ItemProperty -Name "(Default)" -Value ""
 
+# Turn off touchpad clicks
+Write-Output "Turning off touchpad tap-to-click."
+Set-Registry -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PrecisionTouchPad" -Name "TapsEnabled" -Value 0
+
 # Administrative Templates => Network => Lanman Workstation => Enable Insecure guest logons
 Write-Output "Enabling anonymous network shares."
 Set-Registry -Path "HKLM:\Software\Policies\Microsoft\Windows\LanmanWorkstation" -Name AllowInsecureGuestAuth -Value 1
