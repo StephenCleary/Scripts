@@ -13,10 +13,9 @@ Boss.FindElements("Log In").First().Click();
 var loginWindow = Boss.Browser.WebDriver.WindowHandles.Single(x => x != flashWindow);
 Boss.Browser.WebDriver.Close();
 Boss.Browser.WebDriver.SwitchTo().Window(loginWindow);
-var credentials = File.ReadAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "401Kcredentials.txt")).Split('\n').Select(x => x.Trim()).Where(x => x != "").ToList();
-Boss.Browser.WebDriver.Manage().Cookies.AddCookie(new OpenQA.Selenium.Cookie("deviceToken", credentials[2], "/"));
-Boss.Write("#lgn-username-input", credentials[0]);
-Boss.Write("#lgn-password-input", credentials[1]);
+Boss.Browser.WebDriver.Manage().Cookies.AddCookie(new OpenQA.Selenium.Cookie("deviceToken", Util.GetPassword("401(k) cookie"), "/"));
+Boss.Write("#lgn-username-input", Util.GetPassword("401(k) username"));
+Boss.Write("#lgn-password-input", Util.GetPassword("401(k) password"));
 Boss.Click("#login-button");
 
 // Open transaction history

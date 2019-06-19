@@ -14,9 +14,8 @@ void Main()
 	var loginWindow = Boss.Browser.WebDriver.WindowHandles.Single(x => x != cignaWindow);
 	Boss.Browser.WebDriver.Close();
 	Boss.Browser.WebDriver.SwitchTo().Window(loginWindow);
-	var credentials = File.ReadAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HSAcredentials.txt")).Split('\n').Select(x => x.Trim()).Where(x => x != "").ToList();
-	Boss.Write("#username", credentials[0]);
-	Boss.Write("#password", credentials[1]);
+	Boss.Write("#username", Util.GetPassword("Cigna Username"));
+	Boss.Write("#password", Util.GetPassword("Cigna Password"));
 	Boss.Click("Log In");
 	Boss.Click("Not Now, Thanks");
 	
