@@ -2,24 +2,21 @@
 
 void Main()
 {
-	decimal usd = 119.76M;
-	decimal totalShares = 1.0668M;
+	decimal usd = 35.51M;
+	decimal totalShares = 0.4099M;
 
 	// The number of shares before the transfer.
-	decimal oldVestedShares = 554.2412M;
-	decimal oldMatchingShares = 30.2128M;
+	decimal oldVestedShares = 174.9419M;
+	decimal oldMatchingShares = 8.8577M;
 
-	// The new balances.
-	decimal newVestedShares = 555.2531M;
-	decimal newMatchingShares = 30.2677M;
+	// The earnings.
+	decimal vestedUsd = 33.82M;
+	decimal matchingUsd = 1.69M;
 
-	decimal vestedShares = newVestedShares - oldVestedShares;
-	decimal matchingShares = newMatchingShares - oldMatchingShares;
-
-	if (vestedShares + matchingShares != totalShares)
+	if (vestedUsd + matchingUsd != usd)
 		throw new InvalidOperationException("Doesn't add up.");
 
-	var (vestedUsd, matchingUsd) = Share(vestedShares, matchingShares, usd, 2);
+	var (vestedShares, matchingShares) = Share(vestedUsd, matchingUsd, totalShares, 4);
 
 	new {
 		Title = "Vested",
