@@ -2,16 +2,16 @@
 
 void Main()
 {
-	decimal usd = 119.76M;
-	decimal totalShares = 1.0668M;
+	decimal usd = 142.59M;
+	decimal totalShares = 1.1077M;
 
 	// The number of shares before the transfer.
-	decimal oldVestedShares = 554.2412M;
-	decimal oldMatchingShares = 30.2128M;
+	decimal oldVestedShares = 576.6717M;
+	decimal oldMatchingShares = 32.4096M;
 
 	// The new balances.
-	decimal newVestedShares = 555.2531M;
-	decimal newMatchingShares = 30.2677M;
+	decimal newVestedShares = 577.7204M;
+	decimal newMatchingShares = 32.4686M;
 
 	decimal vestedShares = newVestedShares - oldVestedShares;
 	decimal matchingShares = newMatchingShares - oldMatchingShares;
